@@ -53,7 +53,7 @@ export class UserService {
                     this.router.navigateByUrl('login');
                     return o.complete();
                 },
-                    (err) => o.error(err))
+                     (err) => o.error(err));
         });
     }
 
@@ -65,9 +65,9 @@ export class UserService {
     }
 
     currentProfile(): Observable<any> {
-        const currProfilUrl = this.baseUrl + 'profiles/' + this.loginData.user.id + "/"
+        const url = this.baseUrl + 'profiles/' + this.loginData.user.id + '/';
         return new Observable((o: any) => {
-            this.http.get(currProfilUrl, { headers: this.httpHeaders })
+            this.http.get(url, { headers: this.httpHeaders })
                 .subscribe((res) => {
                     o.next(res);
                     return o.complete();
@@ -75,6 +75,35 @@ export class UserService {
                     return o.error(err);
                 });
         })
+    }
+
+    updateProfile(profileId: number, formData: any): Observable<any> {
+        const url = this.baseUrl + 'profiles/' + profileId + '/';
+        return new Observable((o: any) => {
+            this.http.put(url, {
+                'id': profileId,
+                'department': formData.department,
+                'workplace': formData.workplace,
+                'office': formData.office,
+                'phone': formData.phone,
+                'address': formData.address,
+                'personal_web_site': formData.personal_web_site,
+                'user': {
+                    'id': this.loginData.user.id,
+                    'username': formData.username,
+                    'first_name': formData.first_name,
+                    'last_name': formData.last_name
+                }
+            }, { headers: this.httpHeaders }).subscribe((res) => {
+                o.next(res);
+                return o.complete();
+            }, (err) => {
+                o.error(err);
+            });
+        });
+
+
+        return null;
     }
 
 }

@@ -14,21 +14,22 @@ export class ProfileComponent implements OnInit {
     panelOpenState = false;
 
     // preview image
-    public imagePath;
+    public imagePath: any;
     imgURL: any;
     public message: string;
 
-    preview(files) {
-        if (files.length === 0)
-            return;
-
-        var mimeType = files[0].type;
-        if (mimeType.match(/image\/*/) == null) {
-            this.message = "Tip fajla mora biti slika.";
+    preview(files: any) {
+        if (files.length === 0) {
             return;
         }
 
-        var reader = new FileReader();
+        const mimeType = files[0].type;
+        if (mimeType.match(/image\/*/) == null) {
+            this.message = 'Tip fajla mora biti slika.';
+            return;
+        }
+
+        const reader = new FileReader();
         this.imagePath = files;
         reader.readAsDataURL(files[0]);
         reader.onload = (_event) => {
@@ -53,11 +54,13 @@ export class ProfileComponent implements OnInit {
         this.form = new FormGroup({
             first_name: new FormControl('', Validators.required),
             last_name: new FormControl('', Validators.required),
-            username: new FormControl('', [Validators.required, Validators.email]),
+            username: new FormControl('', [Validators.required]),
             address: new FormControl(),
             workplace: new FormControl(),
             office: new FormControl(),
-            phone: new FormControl()
+            phone: new FormControl(),
+            department: new FormControl(),
+            personal_web_site: new FormControl()
         });
     }
 
@@ -66,7 +69,11 @@ export class ProfileComponent implements OnInit {
     }
 
     updateProfile() {
-        console.log(" -- update profile -- ", this.form.value);
+        console.log(' -- form value profile -- ', this.form.value);
+        console.log(' -- db value profile --', this.userProfile);
+        this.userService.updateProfile(this.userProfile.id, this.form.value)
+            .subscribe((res) => { console.log('--success prof. update--', res); },
+                       (err) => { console.log('--error prof. update --', err); });
     }
 
     initFormValues() {
@@ -77,7 +84,9 @@ export class ProfileComponent implements OnInit {
             address: this.userProfile.address,
             workplace: this.userProfile.workplace,
             office: this.userProfile.office,
-            phone: this.userProfile.phone
+            phone: this.userProfile.phone,
+            department: this.userProfile.department,
+            personal_web_site: this.userProfile.personal_web_site
         });
     }
 
@@ -94,7 +103,9 @@ export class ProfileComponent implements OnInit {
             address: '',
             workplace: '',
             office: '',
-            phone: ''
+            phone: '',
+            department: '',
+            personal_web_site: ''
         });
     }
 
