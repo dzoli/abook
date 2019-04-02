@@ -53,7 +53,7 @@ export class UserService {
                     this.router.navigateByUrl('login');
                     return o.complete();
                 },
-                     (err) => o.error(err));
+                    (err) => o.error(err));
         });
     }
 
@@ -77,24 +77,30 @@ export class UserService {
         })
     }
 
-    updateProfile(profileId: number, formData: any): Observable<any> {
-        const url = this.baseUrl + 'profiles/' + profileId + '/';
+    updateProfile(profile: any, formData: any, selectedFile: File): Observable<any> {
+        const url = this.baseUrl + 'profiles/' + profile.id + '/';
+
+
+        let uploadData: FormData = new FormData();
+
+        uploadData.append('id', String(profile));
+        uploadData.append('department', formData.department);
+        uploadData.append('workplace', formData.workplace);
+        uploadData.append('office', formData.office);
+        uploadData.append('phone', formData.phone);
+        uploadData.append('addres', formData.addres);
+        uploadData.append('personal_web_site', formData.personal_web_site);
+        uploadData.append('user.id', this.loginData.user.id);
+        uploadData.append('user.username', formData.username);
+        uploadData.append('user.first_name', formData.first_name);
+        uploadData.append('user.last_name', formData.last_name);
+        uploadData.append('profile_img', selectedFile);
+
         return new Observable((o: any) => {
-            this.http.put(url, {
-                'id': profileId,
-                'department': formData.department,
-                'workplace': formData.workplace,
-                'office': formData.office,
-                'phone': formData.phone,
-                'address': formData.address,
-                'personal_web_site': formData.personal_web_site,
-                'user': {
-                    'id': this.loginData.user.id,
-                    'username': formData.username,
-                    'first_name': formData.first_name,
-                    'last_name': formData.last_name
-                }
-            }, { headers: this.httpHeaders }).subscribe((res) => {
+            this.http.put(url,
+                uploadData
+                // , { headers: this.httpHeaders }
+            ).subscribe((res) => {
                 o.next(res);
                 return o.complete();
             }, (err) => {

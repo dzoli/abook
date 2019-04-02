@@ -15,8 +15,9 @@ export class ProfileComponent implements OnInit {
 
     // preview image
     public imagePath: any;
-    imgURL: any;
     public message: string;
+
+    private selectedFile: File;
 
     preview(files: any) {
         if (files.length === 0) {
@@ -29,11 +30,11 @@ export class ProfileComponent implements OnInit {
             return;
         }
 
+        this.selectedFile = files[0];
         const reader = new FileReader();
         this.imagePath = files;
         reader.readAsDataURL(files[0]);
         reader.onload = (_event) => {
-            // this.imgURL = reader.result;
             this.userProfile.profile_img = reader.result;
             console.log('--userprof==', this.userProfile);
         }
@@ -71,7 +72,7 @@ export class ProfileComponent implements OnInit {
     updateProfile() {
         console.log(' -- form value profile -- ', this.form.value);
         console.log(' -- db value profile --', this.userProfile);
-        this.userService.updateProfile(this.userProfile.id, this.form.value)
+        this.userService.updateProfile(this.userProfile, this.form.value, this.selectedFile)
             .subscribe((res) => { console.log('--success prof. update--', res); },
                        (err) => { console.log('--error prof. update --', err); });
     }
